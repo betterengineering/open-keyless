@@ -14,3 +14,9 @@ mocks: tools $GOPATH/src/periph.io/x/periph/conn/gpio
 
 test:
 	go test -v -cover ./...
+
+clean:
+	rm -rf build/out
+
+build: clean
+	GOOS=linux GOARCH=arm CGO_ENABLED=0 go build -a -installsuffix cgo -o build/out/linux/arm/open-keyless-controller github.com/lodge93/open-keyless/cmd/open-keyless-controller

@@ -1,0 +1,17 @@
+kind: pipeline
+name: default
+
+steps:
+  - name: test
+    image: golang:1.11
+    environment:
+      GO111MODULE: on
+    commands:
+      - make test
+
+  - name: build
+    image: golang:1.11
+    environment:
+      GO111MODULE: on
+    commands:
+      - make build
