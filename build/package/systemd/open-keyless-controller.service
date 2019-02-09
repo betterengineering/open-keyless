@@ -1,0 +1,13 @@
+[Unit]
+Description=Open Keyless Controller
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root
+ExecStart=/usr/local/bin/open-keyless-controller
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

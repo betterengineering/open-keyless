@@ -16,3 +16,15 @@ steps:
       GO111MODULE: on
     commands:
       - make build
+
+  - name: build debian package
+    image: quay.io/lodge93/drone-fpm:latest
+    settings:
+      name: open-keyless-controller
+      version: snapshot-${DRONE_COMMIT_SHA}
+      input_type: dir
+      output_type: deb
+      architecture: armhf
+      package: build/out/open-keyless-controller-snapshot-${DRONE_COMMIT_SHA}.deb
+      deb_systemd: build/package/systemd/open-keyless-controller.service
+      command_arguments: build/out/linux/arm/open-keyless-controller=/usr/local/bin/
