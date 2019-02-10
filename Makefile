@@ -13,8 +13,12 @@ mocks: tools $GOPATH/src/periph.io/x/periph/conn/gpio
 	 mockgen -source $(GOPATH)/src/periph.io/x/periph/conn/gpio/gpio.go -destination internal/mocks/pin_io.go -package mocks
 	 mockgen -source pkg/scanner/libnfc.go -destination internal/mocks/libnfc.go -package mocks
 	 mockgen -source pkg/scanner/scanner.go -destination internal/mocks/scanner.go -package mocks
+	 mockgen -source pkg/datastore/datastore.go -destination internal/mocks/datastore.go -package mocks
 
 test:
+	go test -v -cover -short ./...
+
+test-full:
 	go test -v -cover ./...
 
 clean:
