@@ -26,6 +26,11 @@ To run tests locally, run the following:
 make test
 ```
 
+To include integration tests, run the following:
+```bash
+make test-full
+```
+
 ### Mocks
 This project uses Golang's [mockgen](https://github.com/golang/mock) tool to generate mocks for interfaces. To regenerate mocks, run the following:
 ```bash

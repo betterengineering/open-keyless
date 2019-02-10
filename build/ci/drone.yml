@@ -6,9 +6,13 @@ steps:
     image: golang:1.11
     environment:
       GO111MODULE: on
+      AIRTABLE_API_KEY:
+        from_secret: airtable_api_key
+      AIRTABLE_BASE_ID:
+        from_secret: airtable_base_id
     commands:
       - apt-get update && apt-get install -y libnfc-dev
-      - make test
+      - make test-full
 
   - name: build
     image: golang:1.11
