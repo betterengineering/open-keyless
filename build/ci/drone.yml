@@ -1,6 +1,10 @@
 kind: pipeline
 name: default
 
+platform:
+  os: linux
+  arch: amd64
+
 steps:
   - name: test
     image: golang:1.11
@@ -14,21 +18,40 @@ steps:
       - apt-get update && apt-get install -y libnfc-dev
       - make test-full
 
-  - name: build
+  - name: build binary
     image: golang:1.11
     environment:
       GO111MODULE: on
+      AIRTABLE_API_KEY:
+        from_secret: airtable_api_key
+      AIRTABLE_BASE_ID:
+        from_secret: airtable_base_id
     commands:
+      - dpkg --add-architecture armhf
+      - apt-get update && apt-get install -y libusb-0.1-4:armhf libc6-dev:armhf libnfc-dev:armhf libusb-dev:armhf libnfc5:armhf gcc-arm-linux-gnueabihf
       - make build
 
   - name: build debian package
-    image: quay.io/lodge93/drone-fpm:latest
+    image: lodge93/drone-fpm
+    pull: always
     settings:
       name: open-keyless-controller
-      version: snapshot-${DRONE_COMMIT_SHA}
+      version: 0.0.1-${DRONE_BUILD_NUMBER}
       input_type: dir
       output_type: deb
       architecture: armhf
-      package: build/out/open-keyless-controller-snapshot-${DRONE_COMMIT_SHA}.deb
+      package: build/out/open-keyless-controller_0.0.1-${DRONE_BUILD_NUMBER}_armhf.deb
       deb_systemd: build/package/systemd/open-keyless-controller.service
       command_arguments: build/out/linux/arm/open-keyless-controller=/usr/local/bin/
+
+  - name: upload to gcs
+    image: plugins/gcs
+    environment:
+      GOOGLE_CREDENTIALS:
+        from_secret: google_auth_key
+    settings:
+      source: build/out/open-keyless-controller_0.0.1-${DRONE_BUILD_NUMBER}_armhf.deb
+      target: open-keyless-build-storage/snapshots/open-keyless-controller_0.0.1-${DRONE_BUILD_NUMBER}_armhf.deb
+      acl:
+        - allUsers:READER
+      cache_control: public,max-age=3600
