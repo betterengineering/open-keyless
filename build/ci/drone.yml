@@ -27,7 +27,7 @@ steps:
       AIRTABLE_BASE_ID:
         from_secret: airtable_base_id
     commands:
-      - git clone https://github.com/raspberrypi/tools.git
+      - git clone https://github.com/raspberrypi/tools.git /tools
       - dpkg --add-architecture armhf
       - apt-get update && apt-get install -y libusb-0.1-4:armhf libc6-dev:armhf libnfc-dev:armhf libusb-dev:armhf libnfc5:armhf
       - make build
