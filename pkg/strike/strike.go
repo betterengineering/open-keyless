@@ -25,12 +25,19 @@ import (
 	"sync"
 	"time"
 
+	"periph.io/x/periph/conn/gpio/gpioreg"
+
+	"periph.io/x/periph/host"
+
 	"periph.io/x/periph/conn/gpio"
 )
 
 const (
 	// ErrStrikeNotInitialized is returned when unlock is called after Done() has been called on the strike.
 	ErrStrikeNotInitialized = "strike cannot be unlocked after Done() has been called"
+
+	// ErrCouldNotInitializeGPIOPin is returned when the GPIO pin for the strike can not be initialized.
+	ErrCouldNotInitializeGPIOPin = "could not initialize the GPIO pin for the strike"
 )
 
 // Strike is an interface for an electric door strike. This interface was created for the sole purpose of generating a
@@ -50,6 +57,21 @@ type DoorStrike struct {
 	quitStrike     chan bool
 	quitTime       chan bool
 	wg             *sync.WaitGroup
+}
+
+// NewDefaultDoorStrike returns an initialized door strike on the default GPIO pin.
+func NewDefaultDoorStrike() (*DoorStrike, error) {
+	_, err := host.Init()
+	if err != nil {
+		return nil, err
+	}
+
+	p := gpioreg.ByName("16")
+	if p == nil {
+		return nil, errors.New(ErrCouldNotInitializeGPIOPin)
+	}
+
+	return NewDoorStrike(p)
 }
 
 // NewDoorStrike returns an initialized DoorStrike ready for use.

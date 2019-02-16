@@ -1,0 +1,4 @@
+datastore:
+  airtable:
+    key: foo
+    base: bar

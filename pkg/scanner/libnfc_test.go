@@ -57,7 +57,7 @@ func TestLibNFCScanner(t *testing.T) {
 	}()
 
 	s.Scan()
-	time.Sleep(1 * time.Millisecond)
+	time.Sleep(5 * time.Millisecond)
 	s.Done()
 
 	if errorFound {
