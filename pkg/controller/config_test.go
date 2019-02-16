@@ -13,24 +13,30 @@
 // COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-package main
+package controller_test
 
 import (
-	"log"
+	"reflect"
+	"testing"
 
 	"github.com/lodge93/open-keyless/pkg/controller"
+	"github.com/lodge93/open-keyless/pkg/datastore"
 )
 
-func main() {
-	config, err := controller.NewControllerConfig()
+func TestNewControllerConfig(t *testing.T) {
+	actual, err := controller.NewControllerConfig()
 	if err != nil {
-		log.Fatalf("could not instantiate config - %s", err)
+		t.Fatalf("could not create controller config - %s", err)
 	}
 
-	cntrl, err := controller.NewController(config)
-	if err != nil {
-		log.Fatalf("could not initialize controller - %s", err)
+	expected := controller.ControllerConfig{
+		AirtableConfig: datastore.AirtableDatastoreConfig{
+			Key:    "foo",
+			BaseID: "bar",
+		},
 	}
 
-	cntrl.Run()
+	if !reflect.DeepEqual(expected, actual) {
+		t.Errorf("expected '%+v' does not equal actual '%+v'", expected, actual)
+	}
 }
