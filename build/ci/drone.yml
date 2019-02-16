@@ -27,6 +27,7 @@ steps:
       AIRTABLE_BASE_ID:
         from_secret: airtable_base_id
       CMAKE_FIND_ROOT_PATH: /tools/arm-bcm2708/arm-linux-gnueabihf/arm-linux-gnueabihf/sysroot
+      CMAKE_SYSROOT: /tools/arm-bcm2708/arm-linux-gnueabihf/arm-linux-gnueabihf/sysroot
     commands:
       - git clone https://github.com/raspberrypi/tools.git /tools
       - export PATH=$PATH:/tools/arm-bcm2708/arm-linux-gnueabihf/bin
