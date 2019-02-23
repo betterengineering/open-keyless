@@ -18,7 +18,9 @@ package controller
 import (
 	"errors"
 
+	"github.com/lodge93/open-keyless/pkg/application"
 	"github.com/lodge93/open-keyless/pkg/datastore"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
@@ -34,6 +36,9 @@ const (
 type ControllerConfig struct {
 	// AirtableConfig is a configuration object for the Airtable Datastore.
 	AirtableConfig datastore.AirtableDatastoreConfig
+
+	// ApplicationConfig is used to configure metrics and logging for the controller.
+	ApplicationConfig application.Config
 }
 
 // NewControllerConfig provides a populated controller config from a configuration file.
@@ -48,8 +53,43 @@ func NewControllerConfig() (ControllerConfig, error) {
 		return ControllerConfig{}, err
 	}
 
+	applicationConfig, err := populateApplicationConfig()
+	if err != nil {
+		return ControllerConfig{}, err
+	}
+
 	return ControllerConfig{
-		AirtableConfig: airtableConifg,
+		AirtableConfig:    airtableConifg,
+		ApplicationConfig: applicationConfig,
+	}, nil
+}
+
+func populateApplicationConfig() (application.Config, error) {
+	logLevelString := viper.GetString("application.logging.level")
+	if logLevelString == "" {
+		logLevelString = "info"
+	}
+
+	logLevel, err := log.ParseLevel(logLevelString)
+	if err != nil {
+		return application.Config{}, err
+	}
+
+	metricsEnabled := false
+
+	if viper.IsSet("application.metrics.enabled") {
+		metricsEnabled = viper.GetBool("application.metrics.enabled")
+	}
+
+	adminInterface := viper.GetString("application.admin.interface")
+	if adminInterface == "" {
+		adminInterface = ":8081"
+	}
+
+	return application.Config{
+		LogLevel:       logLevel,
+		MetricsEnabled: metricsEnabled,
+		AdminInterface: adminInterface,
 	}, nil
 }
 

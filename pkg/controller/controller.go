@@ -17,33 +17,68 @@
 package controller
 
 import (
-	"log"
-	"strings"
 	"time"
 
+	"github.com/prometheus/client_golang/prometheus"
+
+	"github.com/lodge93/open-keyless/pkg/application"
 	"github.com/lodge93/open-keyless/pkg/datastore"
 	"github.com/lodge93/open-keyless/pkg/scanner"
 	"github.com/lodge93/open-keyless/pkg/strike"
+	log "github.com/sirupsen/logrus"
 )
+
+var (
+	accessDeniedCounter = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "open_keyless_controller_access_denied_total",
+			Help: "The total count of badge scans that were denied access.",
+		},
+		[]string{"badge_id"},
+	)
+	accessGrantedCounter = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "open_keyless_controller_access_granted_total",
+			Help: "The total count of badge scans that were granted access.",
+		},
+		[]string{"badge_id"},
+	)
+)
+
+func init() {
+	prometheus.MustRegister(accessDeniedCounter)
+	prometheus.MustRegister(accessGrantedCounter)
+}
 
 // Controller is the primary struct for Open Keyless controller.
 type Controller struct {
-	datastore datastore.Datastore
-	scanner   scanner.Scanner
-	strike    strike.Strike
-	ids       chan string
-	errors    chan error
+	datastore   datastore.Datastore
+	scanner     scanner.Scanner
+	application *application.Application
+	strike      strike.Strike
+	ids         chan string
+	errors      chan error
 }
 
 // NewController provides an initialized Controller with the provided configuration.
 func NewController(config ControllerConfig) (*Controller, error) {
+	app := application.NewApplication(config.ApplicationConfig, application.OpenKeylessController)
+
 	ds, err := datastore.NewAirTableDataStore(config.AirtableConfig)
 	if err != nil {
+		log.WithFields(log.Fields{
+			"application": app.AppType,
+			"error":       err,
+		}).Error("could not connect to the airtable datastore")
 		return nil, err
 	}
 
 	str, err := strike.NewDefaultDoorStrike()
 	if err != nil {
+		log.WithFields(log.Fields{
+			"application": app.AppType,
+			"error":       err,
+		}).Error("could not connect to door strike")
 		return nil, err
 	}
 
@@ -52,15 +87,20 @@ func NewController(config ControllerConfig) (*Controller, error) {
 
 	scn, err := scanner.NewDefaultLibNFCScanner(ids, errs)
 	if err != nil {
+		log.WithFields(log.Fields{
+			"application": app.AppType,
+			"error":       err,
+		}).Error("could not connect to the NFC scanner")
 		return nil, err
 	}
 
 	return &Controller{
-		datastore: ds,
-		scanner:   scn,
-		strike:    str,
-		ids:       ids,
-		errors:    errs,
+		datastore:   ds,
+		application: app,
+		scanner:     scn,
+		strike:      str,
+		ids:         ids,
+		errors:      errs,
 	}, nil
 }
 
@@ -69,52 +109,65 @@ func (c *Controller) Run() {
 	defer c.strike.Done()
 	defer c.scanner.Done()
 
-	c.printBanner()
 	c.scanner.Scan()
+	c.application.PrintBanner()
+
+	log.WithFields(log.Fields{
+		"application": c.application.AppType,
+	}).Info("scanning for badges")
 
 	for {
 		select {
 		case id := <-c.ids:
+			log.WithFields(log.Fields{
+				"application": c.application.AppType,
+				"id":          id,
+			}).Debug("found badge id")
 			c.processID(id)
 		case err := <-c.errors:
-			log.Printf("error scanning for badges - %s", err)
+			log.WithFields(log.Fields{
+				"application": c.application.AppType,
+				"error":       err,
+			}).Error("encountered an error while scanning for badges")
 		}
-	}
-}
-
-func (c *Controller) printBanner() {
-	banner := `   ____                      __ __           __              
-  / __ \____  ___  ____     / //_/__  __  __/ /__  __________
- / / / / __ \/ _ \/ __ \   / ,< / _ \/ / / / / _ \/ ___/ ___/
-/ /_/ / /_/ /  __/ / / /  / /| /  __/ /_/ / /  __(__  |__  ) 
-\____/ .___/\___/_/ /_/  /_/ |_\___/\__, /_/\___/____/____/  
-    /_/                            /____/                    `
-
-	for _, line := range strings.Split(banner, "\n") {
-		log.Println(line)
 	}
 }
 
 func (c *Controller) processID(id string) {
 	hasAccess, err := c.datastore.HasAccess(id)
 	if err != nil {
-		log.Printf("error communicating with airtable - %s", err)
+		log.WithFields(log.Fields{
+			"application": c.application.AppType,
+			"error":       err,
+		}).Error("error communicating with airtable")
 		return
 	}
 
 	if hasAccess {
 		c.grantAccess(id)
+		accessGrantedCounter.WithLabelValues(id).Inc()
 		return
 	}
 
-	log.Printf("access denied for badge id %s", id)
+	log.WithFields(log.Fields{
+		"application": c.application.AppType,
+		"id":          id,
+	}).Info("access denied for badge id")
+
+	accessDeniedCounter.WithLabelValues(id).Inc()
 }
 
 func (c *Controller) grantAccess(id string) {
-	log.Printf("allowing access for badge id %s", id)
+	log.WithFields(log.Fields{
+		"application": c.application.AppType,
+		"id":          id,
+	}).Info("allowing access for badge id")
 
 	err := c.strike.Unlock(time.Second * 3)
 	if err != nil {
-		log.Printf("error unlocking strike for id %s - %s", id, err)
+		log.WithFields(log.Fields{
+			"application": c.application.AppType,
+			"error":       err,
+		}).Error("error unlocking strike for id")
 	}
 }

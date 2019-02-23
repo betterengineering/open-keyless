@@ -13,38 +13,9 @@
 // COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-package controller_test
+package application
 
-import (
-	"reflect"
-	"testing"
-
-	"github.com/lodge93/open-keyless/pkg/application"
-	"github.com/sirupsen/logrus"
-
-	"github.com/lodge93/open-keyless/pkg/controller"
-	"github.com/lodge93/open-keyless/pkg/datastore"
+const (
+	// OpenKeylessController application type.
+	OpenKeylessController = "open-keyless-controller"
 )
-
-func TestNewControllerConfig(t *testing.T) {
-	actual, err := controller.NewControllerConfig()
-	if err != nil {
-		t.Fatalf("could not create controller config - %s", err)
-	}
-
-	expected := controller.ControllerConfig{
-		AirtableConfig: datastore.AirtableDatastoreConfig{
-			Key:    "foo",
-			BaseID: "bar",
-		},
-		ApplicationConfig: application.Config{
-			LogLevel:       logrus.WarnLevel,
-			MetricsEnabled: true,
-			AdminInterface: ":9091",
-		},
-	}
-
-	if !reflect.DeepEqual(expected, actual) {
-		t.Errorf("expected '%+v' does not equal actual '%+v'", expected, actual)
-	}
-}

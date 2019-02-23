@@ -2,3 +2,10 @@ datastore:
   airtable:
     key: foo
     base: bar
+application:
+  admin:
+    interface: ":9091"
+  logging:
+    level: "warn"
+  metrics:
+    enabled: true
