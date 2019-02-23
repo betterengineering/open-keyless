@@ -19,12 +19,36 @@ package controller
 import (
 	"time"
 
+	"github.com/prometheus/client_golang/prometheus"
+
 	"github.com/lodge93/open-keyless/pkg/application"
 	"github.com/lodge93/open-keyless/pkg/datastore"
 	"github.com/lodge93/open-keyless/pkg/scanner"
 	"github.com/lodge93/open-keyless/pkg/strike"
 	log "github.com/sirupsen/logrus"
 )
+
+var (
+	accessDeniedCounter = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "open_keyless_controller_access_denied_total",
+			Help: "The total count of badge scans that were denied access.",
+		},
+		[]string{"badge_id"},
+	)
+	accessGrantedCounter = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "open_keyless_controller_access_granted_total",
+			Help: "The total count of badge scans that were granted access.",
+		},
+		[]string{"badge_id"},
+	)
+)
+
+func init() {
+	prometheus.MustRegister(accessDeniedCounter)
+	prometheus.MustRegister(accessGrantedCounter)
+}
 
 // Controller is the primary struct for Open Keyless controller.
 type Controller struct {
@@ -121,6 +145,7 @@ func (c *Controller) processID(id string) {
 
 	if hasAccess {
 		c.grantAccess(id)
+		accessGrantedCounter.WithLabelValues(id).Inc()
 		return
 	}
 
@@ -128,6 +153,8 @@ func (c *Controller) processID(id string) {
 		"application": c.application.AppType,
 		"id":          id,
 	}).Info("access denied for badge id")
+
+	accessDeniedCounter.WithLabelValues(id).Inc()
 }
 
 func (c *Controller) grantAccess(id string) {
