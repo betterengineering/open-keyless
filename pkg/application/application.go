@@ -17,8 +17,9 @@
 package application
 
 import (
+	"fmt"
 	"net/http"
-	"strings"
+	"os"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
@@ -49,12 +50,8 @@ func NewApplication(config Config, appType string) *Application {
 // PrintBanner prints a banner message. This should be called once the application has been fully started.
 func (app *Application) PrintBanner() {
 	banner := app.getBannerText()
-
-	for _, line := range strings.Split(banner, "\n") {
-		log.WithFields(log.Fields{
-			"application": app.AppType,
-		}).Info(line)
-	}
+	version := "0.1.0"
+	fmt.Fprint(os.Stderr, fmt.Sprintf(banner, version))
 }
 
 func (app *Application) getBannerText() string {
@@ -65,7 +62,11 @@ func (app *Application) getBannerText() string {
  / / / / __ \/ _ \/ __ \   / ,< / _ \/ / / / / _ \/ ___/ ___/
 / /_/ / /_/ /  __/ / / /  / /| /  __/ /_/ / /  __(__  |__  ) 
 \____/ .___/\___/_/ /_/  /_/ |_\___/\__, /_/\___/____/____/  
-    /_/                            /____/                    `
+    /_/                            /____/                    
+
+Open Keyless Controller
+Version %s
+`
 	default:
 		return ""
 	}
