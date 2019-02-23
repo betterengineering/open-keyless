@@ -13,38 +13,19 @@
 // COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-package controller_test
+package application
 
-import (
-	"reflect"
-	"testing"
+import "github.com/sirupsen/logrus"
 
-	"github.com/lodge93/open-keyless/pkg/application"
-	"github.com/sirupsen/logrus"
+// Config is a configuration object for applications.
+type Config struct {
+	// LogLevel the logging level for the application.
+	LogLevel logrus.Level
 
-	"github.com/lodge93/open-keyless/pkg/controller"
-	"github.com/lodge93/open-keyless/pkg/datastore"
-)
+	// MetricsEnabled whether or not to enable the prometheus metrics endpoint.
+	MetricsEnabled bool
 
-func TestNewControllerConfig(t *testing.T) {
-	actual, err := controller.NewControllerConfig()
-	if err != nil {
-		t.Fatalf("could not create controller config - %s", err)
-	}
-
-	expected := controller.ControllerConfig{
-		AirtableConfig: datastore.AirtableDatastoreConfig{
-			Key:    "foo",
-			BaseID: "bar",
-		},
-		ApplicationConfig: application.Config{
-			LogLevel:       logrus.WarnLevel,
-			MetricsEnabled: true,
-			AdminInterface: ":9091",
-		},
-	}
-
-	if !reflect.DeepEqual(expected, actual) {
-		t.Errorf("expected '%+v' does not equal actual '%+v'", expected, actual)
-	}
+	// AdminInterface is the interface string for the admin endpoints. Ex "192.168.10.100:8081". The IP address can be
+	// excluded for all interfaces. Ex ":8081".
+	AdminInterface string
 }

@@ -17,22 +17,23 @@
 package controller
 
 import (
-	"log"
-	"strings"
 	"time"
 
+	"github.com/lodge93/open-keyless/pkg/application"
 	"github.com/lodge93/open-keyless/pkg/datastore"
 	"github.com/lodge93/open-keyless/pkg/scanner"
 	"github.com/lodge93/open-keyless/pkg/strike"
+	log "github.com/sirupsen/logrus"
 )
 
 // Controller is the primary struct for Open Keyless controller.
 type Controller struct {
-	datastore datastore.Datastore
-	scanner   scanner.Scanner
-	strike    strike.Strike
-	ids       chan string
-	errors    chan error
+	datastore   datastore.Datastore
+	scanner     scanner.Scanner
+	application *application.Application
+	strike      strike.Strike
+	ids         chan string
+	errors      chan error
 }
 
 // NewController provides an initialized Controller with the provided configuration.
@@ -55,12 +56,15 @@ func NewController(config ControllerConfig) (*Controller, error) {
 		return nil, err
 	}
 
+	app := application.NewApplication(config.ApplicationConfig, application.OpenKeylessController)
+
 	return &Controller{
-		datastore: ds,
-		scanner:   scn,
-		strike:    str,
-		ids:       ids,
-		errors:    errs,
+		datastore:   ds,
+		application: app,
+		scanner:     scn,
+		strike:      str,
+		ids:         ids,
+		errors:      errs,
 	}, nil
 }
 
@@ -69,8 +73,8 @@ func (c *Controller) Run() {
 	defer c.strike.Done()
 	defer c.scanner.Done()
 
-	c.printBanner()
 	c.scanner.Scan()
+	c.application.PrintBanner()
 
 	for {
 		select {
@@ -79,19 +83,6 @@ func (c *Controller) Run() {
 		case err := <-c.errors:
 			log.Printf("error scanning for badges - %s", err)
 		}
-	}
-}
-
-func (c *Controller) printBanner() {
-	banner := `   ____                      __ __           __              
-  / __ \____  ___  ____     / //_/__  __  __/ /__  __________
- / / / / __ \/ _ \/ __ \   / ,< / _ \/ / / / / _ \/ ___/ ___/
-/ /_/ / /_/ /  __/ / / /  / /| /  __/ /_/ / /  __(__  |__  ) 
-\____/ .___/\___/_/ /_/  /_/ |_\___/\__, /_/\___/____/____/  
-    /_/                            /____/                    `
-
-	for _, line := range strings.Split(banner, "\n") {
-		log.Println(line)
 	}
 }
 
