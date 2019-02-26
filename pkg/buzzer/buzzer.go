@@ -21,8 +21,6 @@ import (
 	"sync"
 	"time"
 
-	"periph.io/x/periph/conn/physic"
-
 	"periph.io/x/periph/conn/gpio"
 
 	"periph.io/x/periph/conn/gpio/gpioreg"
@@ -46,7 +44,7 @@ type Buzzer struct {
 func NewBuzzer() (*Buzzer, error) {
 	var wg sync.WaitGroup
 
-	pin := gpioreg.ByName("GPIO11")
+	pin := gpioreg.ByName("23")
 	if pin == nil {
 		return nil, errors.New(ErrCouldNotInitializeGPIOPin)
 	}
@@ -88,14 +86,14 @@ func (buzz *Buzzer) buzzerController() {
 	for {
 		select {
 		case durr := <-buzz.ctrl:
-			err := buzz.pin.PWM(gpio.DutyHalf, 440*physic.Hertz)
+			err := buzz.pin.Out(gpio.High)
 			if err != nil {
 				log.Printf("error settting buzzer - %s", err)
 				continue
 			}
 
 			time.Sleep(durr)
-			err = buzz.pin.Halt()
+			err = buzz.pin.Out(gpio.Low)
 			if err != nil {
 				log.Printf("error halting buzzer - %s", err)
 				continue
