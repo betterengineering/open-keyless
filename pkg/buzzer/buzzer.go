@@ -17,6 +17,7 @@ package buzzer
 
 import (
 	"errors"
+	"log"
 	"sync"
 	"time"
 
@@ -45,7 +46,7 @@ type Buzzer struct {
 func NewBuzzer() (*Buzzer, error) {
 	var wg sync.WaitGroup
 
-	pin := gpioreg.ByName("23")
+	pin := gpioreg.ByName("GPIO11")
 	if pin == nil {
 		return nil, errors.New(ErrCouldNotInitializeGPIOPin)
 	}
@@ -58,6 +59,7 @@ func NewBuzzer() (*Buzzer, error) {
 		wg:          &wg,
 	}
 
+	buzz.wg.Add(1)
 	go buzz.buzzerController()
 
 	return buzz, nil
@@ -88,12 +90,14 @@ func (buzz *Buzzer) buzzerController() {
 		case durr := <-buzz.ctrl:
 			err := buzz.pin.PWM(gpio.DutyHalf, 440*physic.Hertz)
 			if err != nil {
+				log.Printf("error settting buzzer - %s", err)
 				continue
 			}
 
 			time.Sleep(durr)
 			err = buzz.pin.Halt()
 			if err != nil {
+				log.Printf("error halting buzzer - %s", err)
 				continue
 			}
 		case <-buzz.quit:
