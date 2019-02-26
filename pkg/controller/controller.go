@@ -19,13 +19,15 @@ package controller
 import (
 	"time"
 
-	"github.com/prometheus/client_golang/prometheus"
+	"github.com/lodge93/open-keyless/pkg/buzzer"
 
 	"github.com/lodge93/open-keyless/pkg/application"
 	"github.com/lodge93/open-keyless/pkg/datastore"
 	"github.com/lodge93/open-keyless/pkg/scanner"
 	"github.com/lodge93/open-keyless/pkg/strike"
+	"github.com/prometheus/client_golang/prometheus"
 	log "github.com/sirupsen/logrus"
+	"periph.io/x/periph/host"
 )
 
 var (
@@ -54,6 +56,7 @@ func init() {
 type Controller struct {
 	datastore   datastore.Datastore
 	scanner     scanner.Scanner
+	buzzer      *buzzer.Buzzer
 	application *application.Application
 	strike      strike.Strike
 	ids         chan string
@@ -64,12 +67,27 @@ type Controller struct {
 func NewController(config ControllerConfig) (*Controller, error) {
 	app := application.NewApplication(config.ApplicationConfig, application.OpenKeylessController)
 
+	// Initialize the Raspberry Pi GPIO before instantiating components.
+	_, err := host.Init()
+	if err != nil {
+		return nil, err
+	}
+
 	ds, err := datastore.NewAirTableDataStore(config.AirtableConfig)
 	if err != nil {
 		log.WithFields(log.Fields{
 			"application": app.AppType,
 			"error":       err,
 		}).Error("could not connect to the airtable datastore")
+		return nil, err
+	}
+
+	buzz, err := buzzer.NewBuzzer()
+	if err != nil {
+		log.WithFields(log.Fields{
+			"application": app.AppType,
+			"error":       err,
+		}).Error("could not connect to the buzzer")
 		return nil, err
 	}
 
@@ -97,6 +115,7 @@ func NewController(config ControllerConfig) (*Controller, error) {
 	return &Controller{
 		datastore:   ds,
 		application: app,
+		buzzer:      buzz,
 		scanner:     scn,
 		strike:      str,
 		ids:         ids,
@@ -108,6 +127,7 @@ func NewController(config ControllerConfig) (*Controller, error) {
 func (c *Controller) Run() {
 	defer c.strike.Done()
 	defer c.scanner.Done()
+	defer c.buzzer.Done()
 
 	c.scanner.Scan()
 	c.application.PrintBanner()
@@ -134,6 +154,9 @@ func (c *Controller) Run() {
 }
 
 func (c *Controller) processID(id string) {
+	log.Info("buzzing buzzer")
+	c.buzzer.Buzz()
+
 	hasAccess, err := c.datastore.HasAccess(id)
 	if err != nil {
 		log.WithFields(log.Fields{

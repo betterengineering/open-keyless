@@ -25,11 +25,8 @@ import (
 	"sync"
 	"time"
 
-	"periph.io/x/periph/conn/gpio/gpioreg"
-
-	"periph.io/x/periph/host"
-
 	"periph.io/x/periph/conn/gpio"
+	"periph.io/x/periph/conn/gpio/gpioreg"
 )
 
 const (
@@ -61,11 +58,6 @@ type DoorStrike struct {
 
 // NewDefaultDoorStrike returns an initialized door strike on the default GPIO pin.
 func NewDefaultDoorStrike() (*DoorStrike, error) {
-	_, err := host.Init()
-	if err != nil {
-		return nil, err
-	}
-
 	p := gpioreg.ByName("16")
 	if p == nil {
 		return nil, errors.New(ErrCouldNotInitializeGPIOPin)
