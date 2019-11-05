@@ -1,16 +1,12 @@
 .PHONY: mocks
 
 $GOPATH/bin/mockgen:
-	 GO111MODULE=off go get github.com/golang/mock/gomock
-	 GO111MODULE=off go install github.com/golang/mock/mockgen
-
-$GOPATH/src/periph.io/x/periph/conn/gpio:
-	 GO111MODULE=off go get periph.io/x/periph/conn/gpio
+	 go get github.com/golang/mock/gomock
+	 go install github.com/golang/mock/mockgen
 
 tools: $GOPATH/bin/mockgen
 
-mocks: tools $GOPATH/src/periph.io/x/periph/conn/gpio
-	 mockgen -source $(GOPATH)/src/periph.io/x/periph/conn/gpio/gpio.go -destination internal/mocks/pin_io.go -package mocks
+mocks: tools
 	 mockgen -source pkg/scanner/libnfc.go -destination internal/mocks/libnfc.go -package mocks
 	 mockgen -source pkg/scanner/scanner.go -destination internal/mocks/scanner.go -package mocks
 	 mockgen -source pkg/datastore/datastore.go -destination internal/mocks/datastore.go -package mocks
