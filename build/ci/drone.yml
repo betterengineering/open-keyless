@@ -7,7 +7,7 @@ platform:
 
 steps:
   - name: test
-    image: golang:1.11
+    image: golang:1.13
     environment:
       GO111MODULE: on
       AIRTABLE_API_KEY:
@@ -19,7 +19,7 @@ steps:
       - make test-full
 
   - name: build binary
-    image: golang:1.11
+    image: golang:1.13
     environment:
       GO111MODULE: on
       AIRTABLE_API_KEY:
@@ -51,7 +51,7 @@ steps:
         from_secret: google_auth_key
     settings:
       source: build/out/open-keyless-controller_0.0.1-${DRONE_BUILD_NUMBER}_armhf.deb
-      target: open-keyless-build-storage/snapshots/open-keyless-controller_0.0.1-${DRONE_BUILD_NUMBER}_armhf.deb
+      target: ste332-build-storage/snapshots/open-keyless-controller_0.0.1-${DRONE_BUILD_NUMBER}_armhf.deb
       acl:
         - allUsers:READER
       cache_control: public,max-age=3600
