@@ -18,7 +18,7 @@ package main
 import (
 	"log"
 
-	"github.com/lodge93/open-keyless/pkg/controller"
+	"github.com/betterengineering/open-keyless/pkg/controller"
 )
 
 func main() {

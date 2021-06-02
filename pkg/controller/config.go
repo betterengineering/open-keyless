@@ -18,8 +18,8 @@ package controller
 import (
 	"errors"
 
-	"github.com/lodge93/open-keyless/pkg/application"
-	"github.com/lodge93/open-keyless/pkg/datastore"
+	"github.com/betterengineering/open-keyless/pkg/application"
+	"github.com/betterengineering/open-keyless/pkg/datastore"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
