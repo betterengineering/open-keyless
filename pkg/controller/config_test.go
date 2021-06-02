@@ -19,11 +19,11 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/lodge93/open-keyless/pkg/application"
+	"github.com/betterengineering/open-keyless/pkg/application"
 	"github.com/sirupsen/logrus"
 
-	"github.com/lodge93/open-keyless/pkg/controller"
-	"github.com/lodge93/open-keyless/pkg/datastore"
+	"github.com/betterengineering/open-keyless/pkg/controller"
+	"github.com/betterengineering/open-keyless/pkg/datastore"
 )
 
 func TestNewControllerConfig(t *testing.T) {

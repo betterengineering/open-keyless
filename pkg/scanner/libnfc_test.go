@@ -21,10 +21,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/betterengineering/open-keyless/internal/mocks"
+	"github.com/betterengineering/open-keyless/pkg/scanner"
 	"github.com/fuzxxl/nfc/2.0/nfc"
 	"github.com/golang/mock/gomock"
-	"github.com/lodge93/open-keyless/internal/mocks"
-	"github.com/lodge93/open-keyless/pkg/scanner"
 )
 
 func TestLibNFCScanner(t *testing.T) {

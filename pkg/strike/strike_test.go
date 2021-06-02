@@ -19,9 +19,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/betterengineering/open-keyless/internal/mocks"
+	"github.com/betterengineering/open-keyless/pkg/strike"
 	"github.com/golang/mock/gomock"
-	"github.com/lodge93/open-keyless/internal/mocks"
-	"github.com/lodge93/open-keyless/pkg/strike"
 	"periph.io/x/periph/conn/gpio"
 )
 

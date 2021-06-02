@@ -1,6 +1,6 @@
 # Open Keyless
-[![Build Status](https://cloud.drone.io/api/badges/lodge93/open-keyless/status.svg)](https://cloud.drone.io/lodge93/open-keyless)
-[![GoDoc](https://godoc.org/github.com/lodge93/open-keyless?status.svg)](https://godoc.org/github.com/lodge93/open-keyless)
+[![Build Status](https://cloud.drone.io/api/badges/betterengineering/open-keyless/status.svg)](https://cloud.drone.io/betterengineering/open-keyless)
+[![GoDoc](https://godoc.org/github.com/betterengineering/open-keyless?status.svg)](https://godoc.org/github.com/betterengineering/open-keyless)
 
 Open Keyless is a keyless entry system for contactless key cards. This project includes all of the necessary software,
 printed circuit board designs, 3D models, and documentation to build an RFID based badge reader and controller.

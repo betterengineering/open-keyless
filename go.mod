@@ -1,4 +1,4 @@
-module github.com/lodge93/open-keyless
+module github.com/betterengineering/open-keyless
 
 require (
 	github.com/BurntSushi/toml v0.3.1 // indirect

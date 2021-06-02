@@ -21,7 +21,7 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/lodge93/open-keyless/pkg/datastore"
+	"github.com/betterengineering/open-keyless/pkg/datastore"
 )
 
 const (

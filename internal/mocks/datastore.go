@@ -5,8 +5,8 @@
 package mocks
 
 import (
+	datastore "github.com/betterengineering/open-keyless/pkg/datastore"
 	gomock "github.com/golang/mock/gomock"
-	datastore "github.com/lodge93/open-keyless/pkg/datastore"
 	reflect "reflect"
 )
 

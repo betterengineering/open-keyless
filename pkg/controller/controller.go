@@ -21,10 +21,10 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus"
 
-	"github.com/lodge93/open-keyless/pkg/application"
-	"github.com/lodge93/open-keyless/pkg/datastore"
-	"github.com/lodge93/open-keyless/pkg/scanner"
-	"github.com/lodge93/open-keyless/pkg/strike"
+	"github.com/betterengineering/open-keyless/pkg/application"
+	"github.com/betterengineering/open-keyless/pkg/datastore"
+	"github.com/betterengineering/open-keyless/pkg/scanner"
+	"github.com/betterengineering/open-keyless/pkg/strike"
 	log "github.com/sirupsen/logrus"
 )
 
