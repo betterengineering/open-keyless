@@ -5,9 +5,10 @@
 package mocks
 
 import (
+	reflect "reflect"
+
 	nfc "github.com/fuzxxl/nfc/2.0/nfc"
 	gomock "github.com/golang/mock/gomock"
-	reflect "reflect"
 )
 
 // MockLibNFCDevice is a mock of LibNFCDevice interface

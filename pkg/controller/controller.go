@@ -64,13 +64,12 @@ type Controller struct {
 func NewController(config ControllerConfig) (*Controller, error) {
 	app := application.NewApplication(config.ApplicationConfig, application.OpenKeylessController)
 
-	ds, err := datastore.NewAirTableDataStore(config.AirtableConfig)
+	ds, err := datastore.NewTextFile(config.TextFileConfig)
 	if err != nil {
 		log.WithFields(log.Fields{
 			"application": app.AppType,
 			"error":       err,
-		}).Error("could not connect to the airtable datastore")
-		return nil, err
+		}).Error("could not read text file")
 	}
 
 	str, err := strike.NewDefaultDoorStrike()
@@ -85,7 +84,7 @@ func NewController(config ControllerConfig) (*Controller, error) {
 	ids := make(chan string, 100)
 	errs := make(chan error, 100)
 
-	scn, err := scanner.NewDefaultLibNFCScanner(ids, errs)
+	scn, err := scanner.NewDefaultHidScanner(ids, errs)
 	if err != nil {
 		log.WithFields(log.Fields{
 			"application": app.AppType,

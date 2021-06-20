@@ -39,6 +39,9 @@ type ControllerConfig struct {
 
 	// ApplicationConfig is used to configure metrics and logging for the controller.
 	ApplicationConfig application.Config
+
+	// TextFileConfig is used to configure the TextFile config.
+	TextFileConfig datastore.TextFileConfig
 }
 
 // NewControllerConfig provides a populated controller config from a configuration file.
@@ -58,9 +61,12 @@ func NewControllerConfig() (ControllerConfig, error) {
 		return ControllerConfig{}, err
 	}
 
+	textFileConfig := populateTextFileConfig()
+
 	return ControllerConfig{
 		AirtableConfig:    airtableConifg,
 		ApplicationConfig: applicationConfig,
+		TextFileConfig:    textFileConfig,
 	}, nil
 }
 
@@ -117,4 +123,10 @@ func populateAirtableConfig() (datastore.AirtableDatastoreConfig, error) {
 		Key:    apiKey,
 		BaseID: baseID,
 	}, nil
+}
+
+func populateTextFileConfig() datastore.TextFileConfig {
+	return datastore.TextFileConfig{
+		Path: viper.GetString("datastore.textFile.path"),
+	}
 }

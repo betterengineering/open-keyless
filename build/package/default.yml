@@ -2,3 +2,5 @@ datastore:
   airtable:
     key: foo
     base: bar
+  textFile:
+    path: "/etc/open-keyless-controller/ids.txt"
