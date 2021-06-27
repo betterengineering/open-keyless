@@ -16,8 +16,6 @@
 package controller
 
 import (
-	"errors"
-
 	"github.com/betterengineering/open-keyless/pkg/application"
 	"github.com/betterengineering/open-keyless/pkg/datastore"
 	log "github.com/sirupsen/logrus"
@@ -48,7 +46,7 @@ func NewControllerConfig() (ControllerConfig, error) {
 		return ControllerConfig{}, err
 	}
 
-	airtableConifg, err := populateAirtableConfig()
+	airtableConifg := populateAirtableConfig()
 	if err != nil {
 		return ControllerConfig{}, err
 	}
@@ -102,19 +100,9 @@ func configureViper() error {
 	return viper.ReadInConfig()
 }
 
-func populateAirtableConfig() (datastore.AirtableDatastoreConfig, error) {
-	apiKey := viper.GetString("datastore.airtable.key")
-	if apiKey == "" {
-		return datastore.AirtableDatastoreConfig{}, errors.New(ErrAirtableAPIKeyNotFound)
-	}
-
-	baseID := viper.GetString("datastore.airtable.base")
-	if baseID == "" {
-		return datastore.AirtableDatastoreConfig{}, errors.New(ErrAirtableBaseIDNotFound)
-	}
-
+func populateAirtableConfig() datastore.AirtableDatastoreConfig {
 	return datastore.AirtableDatastoreConfig{
-		Key:    apiKey,
-		BaseID: baseID,
-	}, nil
+		Key:    viper.GetString("datastore.airtable.key"),
+		BaseID: viper.GetString("datastore.airtable.base"),
+	}
 }
