@@ -7,29 +7,23 @@ platform:
 
 steps:
   - name: test
-    image: golang:1.13
-    environment:
-      GO111MODULE: on
-      AIRTABLE_API_KEY:
-        from_secret: airtable_api_key
-      AIRTABLE_BASE_ID:
-        from_secret: airtable_base_id
+    image: golang:1.16.5-stretch
     commands:
       - apt-get update && apt-get install -y libnfc-dev
       - make test-full
+    volumes:
+      - name: deps
+        path: /go
 
   - name: build binary
-    image: golang:1.13
-    environment:
-      GO111MODULE: on
-      AIRTABLE_API_KEY:
-        from_secret: airtable_api_key
-      AIRTABLE_BASE_ID:
-        from_secret: airtable_base_id
+    image: golang:1.16.5-stretch
     commands:
       - dpkg --add-architecture armhf
       - apt-get update && apt-get install -y libusb-0.1-4:armhf libc6-dev:armhf libnfc-dev:armhf libusb-dev:armhf libnfc5:armhf gcc-arm-linux-gnueabihf
-      - make build
+      - make build-release
+    volumes:
+      - name: deps
+        path: /go
 
   - name: build debian package
     image: lodge93/drone-fpm
@@ -43,3 +37,20 @@ steps:
       package: build/out/open-keyless-controller_0.0.1-${DRONE_BUILD_NUMBER}_armhf.deb
       deb_systemd: build/package/systemd/open-keyless-controller.service
       command_arguments: build/out/linux/arm/open-keyless-controller=/usr/local/bin/
+
+  - name: publish
+    image: plugins/github-release
+    settings:
+      api_key:
+        from_secret: github_token
+    files:
+      - build/out/linux/arm/open-keyless-controller/*
+      - build/package/config.yml
+    checksum:
+      - sha256
+    when:
+      event: tag
+
+volumes:
+  - name: deps
+    path: /go
