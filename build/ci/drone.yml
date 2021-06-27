@@ -32,7 +32,7 @@ steps:
       - make build
 
   - name: build debian package
-    image: betterengineering/drone-fpm
+    image: lodge93/drone-fpm
     pull: always
     settings:
       name: open-keyless-controller
