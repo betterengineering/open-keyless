@@ -43,11 +43,11 @@ steps:
     settings:
       api_key:
         from_secret: github_token
-    files:
-      - build/out/linux/arm/open-keyless-controller/*
-      - build/package/config.yml
-    checksum:
-      - sha256
+      files:
+        - build/out/open-keyless-controller_0.0.1-${DRONE_BUILD_NUMBER}_armhf.deb
+        - build/package/config.yml
+      checksum:
+        - sha256
     when:
       event: tag
 
