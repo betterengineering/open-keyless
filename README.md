@@ -5,17 +5,17 @@
 Open Keyless is a keyless entry system for contactless key cards. This project includes all of the necessary software,
 printed circuit board designs, 3D models, and documentation to build an RFID based badge reader and controller.
 
-Note: this project is under active development and has not yet been completed. Once a functioning version of this
+Note: this project is under development and has not yet been completed. Once a functioning version of this
 project exists, this message will be removed and the release will be added as a github release.
+
+## Installation
+To install the latest release, run the following from your Raspberry Pi:
+```
+curl -LO https://github.com/betterengineering/open-keyless/releases/latest/download/install.sh | sudo bash
+```
 
 ## Documentation
 The documentation for Open Keyless is kept in the repo! Checkout the [Overview](docs/overview.md) for a starting point.
-
-## Versioning
-This projects contains 3D models, printed circuit boards, and software that is released as a unit to guarantee
-compatibility. The software release follows [semantic versioning](https://semver.org/). The hardware release also
-follows semantic versioning with the exception of there not being a patch version. Because the project is verisoned as
-a unit, changes in either the software or the hardware will cause version increments in both.
 
 ## Development
 This project uses Go 1.11 modules! If you have Go 1.11 or later installed, no other project setup is necessary.

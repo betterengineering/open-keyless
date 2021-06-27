@@ -65,6 +65,7 @@ steps:
       files:
         - build/out/open-keyless-controller_${DRONE_TAG}_armhf.deb
         - build/package/config.yml
+        - scripts/install.sh
       checksum:
         - sha256
     when:
