@@ -12,6 +12,7 @@ project exists, this message will be removed and the release will be added as a 
 To install the latest release, run the following from your Raspberry Pi:
 ```
 curl -LO https://github.com/betterengineering/open-keyless/releases/latest/download/install.sh
+chmod +x ./install.sh
 sudo ./install.sh
 ```
 
