@@ -37,6 +37,25 @@ steps:
       package: build/out/open-keyless-controller_0.0.1-${DRONE_BUILD_NUMBER}_armhf.deb
       deb_systemd: build/package/systemd/open-keyless-controller.service
       command_arguments: build/out/linux/arm/open-keyless-controller=/usr/local/bin/
+    when:
+      event:
+        exclude:
+          - tag
+
+  - name: build debian package
+    image: lodge93/drone-fpm
+    pull: always
+    settings:
+      name: open-keyless-controller
+      version: ${DRONE_TAG}
+      input_type: dir
+      output_type: deb
+      architecture: armhf
+      package: build/out/open-keyless-controller_${DRONE_TAG}_armhf.deb
+      deb_systemd: build/package/systemd/open-keyless-controller.service
+      command_arguments: build/out/linux/arm/open-keyless-controller=/usr/local/bin/
+    when:
+      event: tag
 
   - name: publish
     image: plugins/github-release
@@ -44,7 +63,7 @@ steps:
       api_key:
         from_secret: github_token
       files:
-        - build/out/open-keyless-controller_0.0.1-${DRONE_BUILD_NUMBER}_armhf.deb
+        - build/out/open-keyless-controller_${DRONE_TAG}_armhf.deb
         - build/package/config.yml
       checksum:
         - sha256
