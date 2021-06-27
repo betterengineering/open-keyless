@@ -42,7 +42,7 @@ steps:
         exclude:
           - tag
 
-  - name: build debian package
+  - name: build debian package for release
     image: lodge93/drone-fpm
     pull: always
     settings:
@@ -57,7 +57,7 @@ steps:
     when:
       event: tag
 
-  - name: publish
+  - name: publish release
     image: plugins/github-release
     settings:
       api_key:
