@@ -2,6 +2,8 @@ datastore:
   airtable:
     key: foo
     base: bar
+  textFile:
+    path: "/foo/ids.txt"
 application:
   admin:
     interface: ":9091"

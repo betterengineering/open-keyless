@@ -42,6 +42,9 @@ func TestNewControllerConfig(t *testing.T) {
 			MetricsEnabled: true,
 			AdminInterface: ":9091",
 		},
+		TextFileConfig: datastore.TextFileConfig{
+			Path: "/foo/ids.txt",
+		},
 	}
 
 	if !reflect.DeepEqual(expected, actual) {

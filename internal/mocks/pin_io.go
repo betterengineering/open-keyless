@@ -5,11 +5,12 @@
 package mocks
 
 import (
+	reflect "reflect"
+	time "time"
+
 	gomock "github.com/golang/mock/gomock"
 	gpio "periph.io/x/periph/conn/gpio"
 	physic "periph.io/x/periph/conn/physic"
-	reflect "reflect"
-	time "time"
 )
 
 // MockPinIn is a mock of PinIn interface

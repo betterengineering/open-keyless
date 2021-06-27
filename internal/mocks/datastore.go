@@ -5,9 +5,10 @@
 package mocks
 
 import (
+	reflect "reflect"
+
 	datastore "github.com/betterengineering/open-keyless/pkg/datastore"
 	gomock "github.com/golang/mock/gomock"
-	reflect "reflect"
 )
 
 // MockDatastore is a mock of Datastore interface
